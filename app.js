@@ -29,17 +29,19 @@ async function fetchPosts() {
         const response = await fetch('https://jsonplaceholder.typicode.com/posts?_limit=5');
 
         if (!response.ok) {
-            throw new Error(`Ошибка HTTP: ${response.status}`);
+            throw new Error(`Статус: ${response.status} ${response.statusText}`);
         }
 
         const data = await response.json();
         posts = data;
         renderPosts();
-        hideStatus();
+
+        showSuccess(`Публикации загружены. (HTTP статус: ${response.status} ${response.statusText})`);
     } catch (error) {
-        showStatus(`Не удалось загрузить публикации: ${error.message}`);
+        showError(`Ошибка загрузки. Статус: ${error.message}`);
     } finally {
         loadBtn.disabled = false;
+        hideStatus();
     }
 }
 
@@ -73,7 +75,7 @@ async function handleCreatePost(event) {
         });
 
         if (!response.ok) {
-            throw new Error(`Ошибка HTTP: ${response.status}`);
+            throw new Error(`Статус: ${response.status} ${response.statusText}`);
         }
 
         const newPost = await response.json();
@@ -81,10 +83,10 @@ async function handleCreatePost(event) {
         posts.unshift(newPost);
         renderPosts();
 
-        showSuccess(`Пост создан. ID: ${newPost.id}, Заголовок: "${newPost.title}"`);
+        showSuccess(`Пост создан. ID: ${newPost.id} (HTTP статус: ${response.status} ${response.statusText})`);
         postForm.reset();
     } catch (error) {
-        showError(`Ошибка при отправке: ${error.message}`);
+        showError(`Ошибка при отправке. Статус: ${error.message}`);
     } finally {
         submitBtn.disabled = false;
         hideStatus();
